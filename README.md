@@ -56,15 +56,50 @@ A draggable object will emit the following events:
 #### drag.start
 This is triggered when a draggable element is clicked to begin a drag and drop operation.
 
+Typically, this event is used to create a proxy element that will move with the mouse throughout the drag and drop operation.
+
+
+```
+item.on("drag.start", function() {
+    var el = this.getEl(), offset = el.offset();
+
+    this.proxy = el.clone().css({
+        position: "absolute",
+        left: offset.left + "px",
+        top: offset.top + "px"
+    });
+
+    $(document.body).append(this.proxy);
+});
+```
+
 #### drag.move
-This is triggered for every DOM mousemove event that takes place between the start and finish of the drag operation. The coordinates provided are always relative to the document in which the draggable element is within.
+This is triggered for every DOM mousemove event that takes place between the start and finish of the drag operation.
+
+Typically, this event is used to move the proxy element to match the current drag position.
+
+The position coordinates provided are always relative to the document in which the draggable element is within.
+
+```
+item.on("drag.move", function(position) {
+    var el = this.getEl(), offset = el.offset();
+
+    this.proxy.css({
+        left: position.dragX + "px",
+        top: position.dragY + "px"
+    });
+});
+```
 
 #### drag.finish
 This is triggered when a draggable element is dropped. This is fired regardless of whether there has been a *drag.drop* event.
 
+Typically, this event is used to remove the proxy element that was added in response to the *drag.start* event.
+
 ```
 item.on("drag.finish", function() {
-    proxy.remove();
+    this.proxy.remove();
+    this.proxy = null;
 });
 ```
 
@@ -96,6 +131,8 @@ item.on("drag.start", function(dragging) {
 #### drag.finish
 This is triggered when a draggable element in the same interaction group as the droppable finishes being dragged.
 
+Typically, this event is used to remove a CSS class from the droppable element.
+
 ```
 item.on("drag.finish", function(dragging) {
     this.getEl().removeClass("invite-drop");
@@ -116,7 +153,7 @@ item.on("drag.enter", function(dragging) {
 #### drag.leave
 This is triggered when a draggable element in the same interaction group as the droppable leaves its visible area.
 
-Typically, this event is used to remove the visual style from the droppable element, indicating that it is not longer within its visible area.
+Typically, this event is used to remove a CSS class from the droppable element, indicating that it is not longer within its visible area.
 
 ```
 item.on("drag.leave", function(dragging) {
