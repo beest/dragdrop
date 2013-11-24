@@ -3,7 +3,7 @@ define([
     "underscore",
     "backbone",
     "dragdrop/engine"
-], function($, _, Backbone, DragDropEngine) {
+], function($, _, Backbone, Engine) {
 
     function Draggable(config) {
 
@@ -15,7 +15,7 @@ define([
 
         var self = this, el = config.el;
 
-        el.mousedown(function(e) {
+        el.on("mousedown.dragdrop", function(e) {
 
             // Wait a short time to ensure we don't interfere with clicks
             setTimeout(function() {
@@ -26,7 +26,7 @@ define([
                 self.deltaY = e.pageY - position.top;
 
                 // The drag & drop engine deals with everything from here
-                DragDropEngine.startDrag(self);
+                Engine.startDrag(self);
             }, config.timeout);
 
             e.preventDefault();
@@ -44,12 +44,17 @@ define([
             getGroup: function() {
                 return config.group;
             },
+
+            remove: function() {
+                el.off(".dragdrop");
+                Engine.removeDraggable(this);
+            }
         });
 
         // Mixin Backbone custom event handling 
         _.extend(this, Backbone.Events);
 
-        DragDropEngine.addDraggable(this);
+        Engine.addDraggable(this);
     }
 
     return Draggable;

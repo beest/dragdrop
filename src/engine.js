@@ -6,7 +6,7 @@ define([
 
     var webkit = false;
 
-    var draggables = [], droppables = [], iframes = [], scrollables = [];
+    var draggables = [], droppables = [], scrollables = [];
 
     var dragging = null, dropping = null, scrolling = null;
 
@@ -172,35 +172,34 @@ define([
         $(document.body).append(shim);
     }
 
-    var DragDropEngine = {
+    var Engine = {
 
         attachDocument: function(doc, offset) {
 
-            doc.mousemove(function(e) {
+            doc.on("mousemove.dragdrop", function(e) {
                 mousemove(e.pageX, e.pageY, doc, offset);
             });
 
-            doc.mouseup(function(e) {
+            doc.on("mouseup.dragdrop", function(e) {
                 mouseup();
             });
         },
 
         detachDocument: function(doc) {
-            console.log("todo: DragDropEngine.detachDocument");
+            doc.off(".dragdrop");
         },
 
         addIframe: function(iframe) {
 
             if (!webkit) {
-                this.attachDocument(iframe.getDoc(), iframe.getOffset());
+                this.attachDocument(iframe.contents(), iframe.offset());
             }
-
-            iframes.push(iframe);
         },
 
         removeIframe: function(iframe) {
+
             if (!webkit) {
-                //this.removeDocEvents();
+                this.detachDocument(iframe.contents());
             }
         },
 
@@ -265,7 +264,7 @@ define([
             createShim();
         }
 
-        DragDropEngine.attachDocument($(document), {
+        Engine.attachDocument($(document), {
             left: 0,
             top: 0
         });
@@ -289,5 +288,5 @@ define([
         }, 20);
     });
 
-    return DragDropEngine;
+    return Engine;
 });

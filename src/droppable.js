@@ -3,7 +3,7 @@ define([
     "underscore",
     "backbone",
     "dragdrop/engine"
-], function($, _, Backbone, DragDropEngine) {
+], function($, _, Backbone, Engine) {
 
     function Droppable(config) {
 
@@ -83,8 +83,6 @@ define([
 
             hitTest: function(x, y, now) {
 
-console.log(config);
-
                 var rect = cache;
 
                 if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
@@ -98,13 +96,17 @@ console.log(config);
                 }
 
                 return false;
+            },
+
+            remove: function() {
+                Engine.removeDroppable(this);
             }
         });
 
         // Mixin Backbone custom event handling 
         _.extend(this, Backbone.Events);
 
-        DragDropEngine.addDroppable(this);
+        Engine.addDroppable(this);
     }
 
     return Droppable;

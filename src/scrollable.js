@@ -2,7 +2,7 @@ define([
     "underscore",
     "backbone",
     "dragdrop/engine"
-], function(_, Backbone, DragDropEngine) {
+], function(_, Backbone, Engine) {
 
     function Scrollable(config) {
 
@@ -88,13 +88,17 @@ define([
                 var now = Math.min(height, Math.max(0, before + delta));
 
                 iframeDoc.scrollTop(now);
+            },
+
+            remove: function() {
+                Engine.removeScrollable(this);
             }
         });
 
         // Mixin Backbone custom event handling 
         _.extend(this, Backbone.Events);
 
-        DragDropEngine.addScrollable(this);
+        Engine.addScrollable(this);
     }
 
     return Scrollable;
