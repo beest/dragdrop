@@ -4,7 +4,7 @@
 
 A robust drag & drop engine, which supports interaction to, from and between one or more iframes.
 
-The drag & drop engine consists of four behaviours that work together: *draggable*, *droppable*, *iframe* and *scrollable*. Each behaviour object is an event emitter to which you can bind to respond to events in the drag & drop life cycle.
+The drag & drop engine consists of three behaviours that work together: *draggable*, *droppable* and *scrollable*. Each behaviour object is an event emitter to which you can bind functions that respond to events in the drag & drop life cycle.
 
 The drag & drop engine doesn't perform any actions, so it's up to you to move an element, resize an object, or whatever it is you need to happen. Tthe engine simply emits events at every point in the drag and drop life cycle.
 
@@ -28,7 +28,7 @@ define([
     Droppable,
     Scrollable
 ) {
-    // 
+    ...
 });
 ```
 
@@ -43,12 +43,11 @@ If you don't specify the interaction group to be used by the draggable or droppa
 
 The *engine* is a single object that is responsible for transforming raw DOM events into specific events that are more useful to provide drag and drop functionality.
 
-To start the engine, just call the *start* method when the document is ready. If you need to support draggables or droppables in iframes then you need to make the engine aware of these.
+To start the engine, just call the *start* method when the document is ready.
 
 ```javascript
 $(function() {
     Engine.start();
-    Engine.addIframe($(".workspace"));
 });
 ```
 
@@ -208,4 +207,42 @@ A scrollable object does not emit any events.
 
 ## Using iframes
 
-TODO
+If you need to support draggables or droppables in iframes then you need to make the engine aware of each iframe by calling the *addIframe* method.
+
+```javascript
+$(function() {
+    Engine.start();
+    Engine.addIframe($(".workspace"));
+});
+```
+
+This will attach mousemove events to the iframe's document as well as the document in which the engine is being instantiated.
+
+### Proxy Elements
+
+If you want to drag and drop between iframes, you need to create a proxy element in the top-level document. The element is able to be positioned over the top of all iframes.
+
+### Draggables Within iframes
+
+You may want to constrain a draggable within an iframe, for example if the draggable only needs to interact with other elements in the iframe's document. To do this you need to provide the iframe when you create the draggable object.
+
+
+```javascript
+var icon = new Draggable({
+    el: $("#icon-example"),
+    group: "icons",
+    iframe: $(".view")
+});
+```
+
+### Droppables Within iframes
+
+If a droppable element is within an iframe then you should always provide the iframe when you create the droppable object.
+
+```javascript
+var trash = new Droppable({
+    el: $("#trash"),
+    group: "files",
+    iframe: $(".directory")
+});
+```
